@@ -25,67 +25,106 @@ class Deck
         end
       end
     end
-    shuffle!
+    shuffle_deck!
   end
 
-  def shuffle!
+  def shuffle_deck!
     puts
     puts "The dealer shuffles the cards..."
-    @deck.shuffle!
+    deck.shuffle!
   end
 
   def draw
     deck.pop
   end
 
+  def size
+    deck.size
+  end
+
 end
 
 
-class Person
+class Hand
+  attr_accessor :hand
+
+  def initialize
+    @hand = []
+  end
+
+  def deal_card(deck)
+    @hand << deck.draw
+  end
+
+  def add_card(card)
+    @hand << card
+  end
+
+  def read
+    hand.each do |card|
+      card.to_s
+    end
+  end
+
+  def show_upcard
+    hand.slice(1, @hand.length - 1)
+  end
+
+  def each
+    hand.each do |card|
+      card
+    end
+  end
+
+  def slice(x, y)
+    hand.slice(x, y)
+  end
+
+  def length
+    hand.length
+  end
 
   def score
     total = 0
-    @hand.each do |card| 
-      if card.value == "Ace"
+    vals = hand.each.map{ |card| card.value }
+    vals.each do |val|
+      if val == "Ace"
         total += 11
-      elsif card.value.to_i == 0 
+      elsif val.to_i == 0 
         total += 10
       else
-        total += card.value.to_i
+        total += val.to_i
       end
     end
 
-    @hand.select{ |card| card.value == "Ace" }.count.times do
+    vals.select{ |val| val == "Ace" }.count.times do
       total -= 10 if total > MAX_SCORE
     end
 
     total
   end
+
 end
 
 
-class Player < Person
+class Player 
   attr_accessor :name, :hand, :busted
 
   def initialize(n)
     @name = n
-    @hand = []
+    @hand = Hand.new
     @busted = false
   end
 
 end
 
 
-class Dealer < Person
-  attr_accessor :hand, :showing, :busted
+class Dealer
+  attr_accessor :hand, :busted
 
   def initialize
-    @hand = []
+    @hand = Hand.new
     @busted = false
-  end
-
-  def showing
-    @showing = @hand.slice(1, @hand.length - 1)
   end
 
 end
@@ -124,7 +163,8 @@ class Blackjack
   end
 
   def get_name
-    puts "Welcome to John Morgan's object-oriented blackjack game! Please enter name:"
+    puts ("Welcome to John Morgan's object-oriented blackjack game! Please " \
+          "enter name:")
     name = gets.chomp
     puts
     puts "Welcome, #{name}!"
@@ -135,37 +175,37 @@ class Blackjack
     puts
     puts "The dealer deals the cards..."
     2.times do
-      @player.hand << @deck.draw
-      @dealer.hand << @deck.draw
+      player.hand.deal_card(deck)
+      dealer.hand.deal_card(deck)
     end
   end
 
   def show_flop
     puts
-    puts "#{@player.name} has:"
-    puts @player.hand
-    puts "#{@player.name}'s score: #{@player.score}"
+    puts "#{player.name} has:"
+    puts player.hand.read
+    puts "#{player.name}'s score: #{player.hand.score}"
     puts
     puts "The dealer is showing:"
-    puts @dealer.showing
+    puts dealer.hand.show_upcard
     puts
   end
 
   def show_cards
     puts
-    puts "#{@player.name} has:"
-    puts @player.hand
-    puts "#{@player.name}'s score: #{@player.score}"
+    puts "#{player.name} has:"
+    puts player.hand.read
+    puts "#{player.name}'s score: #{player.hand.score}"
     puts
     puts "The dealer has:"
-    puts @dealer.hand
-    puts "The dealer's score: #{@dealer.score}"
+    puts dealer.hand.read
+    puts "The dealer's score: #{dealer.hand.score}"
     puts
   end
   
   def blackjack?
-    if @player.score == 21 
-      if @dealer.score == 21
+    if player.hand.score == 21 
+      if dealer.hand.score == 21
         show_cards
         puts "You have blackjack, but so does the dealer! You draw!"
         return true
@@ -174,7 +214,7 @@ class Blackjack
         puts "Blackjack! You win!"
         return true
       end
-    elsif @dealer.score == 21
+    elsif dealer.hand.score == 21
       show_cards
       puts "The dealer has blackjack! Sorry, you lose!"
       return true
@@ -184,13 +224,13 @@ class Blackjack
 
   def player_turn
     while true 
-      puts "What would you like to do, #{@player.name}? Type 'stay' or 'hit':"
+      puts "What would you like to do, #{player.name}? Type 'stay' or 'hit':"
       input = gets.chomp
       if input == "stay"
         break
       elsif input == "hit"
-        new_card = @deck.draw
-        @player.hand << new_card
+        new_card = deck.draw
+        player.hand.add_card(new_card)
         puts
         puts "You draw a " + new_card.to_s
         show_flop
@@ -200,9 +240,9 @@ class Blackjack
         show_flop
       end
 
-      if @player.score > MAX_SCORE
-        puts "You busted! Sorry, #{@player.name}, but you lose."
-        @player.busted = true
+      if player.hand.score > MAX_SCORE
+        puts "You busted! Sorry, #{player.name}, but you lose."
+        player.busted = true
         break
       end
     end
@@ -211,23 +251,23 @@ class Blackjack
   def dealer_turn
     show_cards
     sleep(1)
-    while @dealer.score < DEALER_CUTOFF
-      new_card = @deck.draw
-      @dealer.hand << new_card
+    while dealer.hand.score < DEALER_CUTOFF
+      new_card = deck.draw
+      dealer.hand.add_card(new_card)
       puts "The dealer draws a " + new_card.to_s
       show_cards
       sleep(1)
     end
-    if @dealer.score > MAX_SCORE
-      puts "The dealer busted! You win, #{@player.name}!"
-      @dealer.busted = true
+    if dealer.hand.score > MAX_SCORE
+      puts "The dealer busts! You win, #{player.name}!"
+      dealer.busted = true
     end
   end
 
   def resolve_game
-    if @player.score > @dealer.score
+    if player.hand.score > dealer.hand.score
       puts "You win this round! Congratulations!"
-    elsif @player.score < @dealer.score
+    elsif player.hand.score < dealer.hand.score
       puts "The dealer wins! Better luck next time!"
     else
       puts "You draw! It's a push!"
@@ -235,8 +275,8 @@ class Blackjack
   end
 
   def reset_game
-    @player.hand, @player.busted = [], false
-    @dealer.hand, @dealer.busted = [], false
+    player.hand, player.busted = Hand.new, false
+    dealer.hand, dealer.busted = Hand.new, false
   end
 
   def play_again
