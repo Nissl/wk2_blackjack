@@ -38,10 +38,6 @@ class Deck
     deck.pop
   end
 
-  def size
-    deck.size
-  end
-
 end
 
 
@@ -107,7 +103,25 @@ class Hand
 end
 
 
-class Player 
+module CardReaders
+
+  def total
+    hand.score
+  end
+
+  def show_hand
+    hand.read
+  end
+
+  def show_upcard
+    hand.show_upcard
+  end
+
+end
+
+
+class Player
+  include CardReaders
   attr_accessor :name, :hand, :busted
 
   def initialize(n)
@@ -120,6 +134,7 @@ end
 
 
 class Dealer
+  include CardReaders
   attr_accessor :hand, :busted
 
   def initialize
@@ -184,7 +199,7 @@ class Blackjack
     puts
     puts "#{player.name} has:"
     puts player.hand.read
-    puts "#{player.name}'s score: #{player.hand.score}"
+    puts "#{player.name}'s score: #{player.total}"
     puts
     puts "The dealer is showing:"
     puts dealer.hand.show_upcard
@@ -195,11 +210,11 @@ class Blackjack
     puts
     puts "#{player.name} has:"
     puts player.hand.read
-    puts "#{player.name}'s score: #{player.hand.score}"
+    puts "#{player.name}'s score: #{player.total}"
     puts
     puts "The dealer has:"
     puts dealer.hand.read
-    puts "The dealer's score: #{dealer.hand.score}"
+    puts "The dealer's score: #{dealer.total}"
     puts
   end
   
