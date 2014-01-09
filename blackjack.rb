@@ -89,7 +89,7 @@ module Hand
   end
 
   def is_busted?
-    score > 21
+    score > MAX_SCORE
   end
 
 end

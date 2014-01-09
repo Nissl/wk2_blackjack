@@ -1,0 +1,66 @@
+Week 2 Quiz
+
+1. Name what each of the below is:
+a = 1 # => ex. a is a local variable, and is a Fixnum object with value 1
+  @a = 2 => a is an instance variable, and is a Fixnum object with value 2
+  user = User.new => initializes an instance of the class User and sets it
+  					  equal to the variable user
+  user.name => returns the contents whatever the method "name" in the class 
+  				User returns. (Presumably this returns their name via the 
+  				standard getter method, although this code hasn't set 
+  				it with attr_accessor or similar.)
+  user.name = "Joe" => sets the user variable name equal to "Joe" using the 
+  						setter method for name (again, unless the method 
+  						name=(n) has been otherwise defined, in which case 
+  						it does whatever that method does with the input 
+  						"Joe".)
+
+2. How does a class mixin a module?
+	At the start of the class, include ModuleName. The module's methods can 
+	then be used as if they were class methods.
+
+3. What's the difference between class variables and instance variables?
+	Instance variables are specific to each instance of a class, and are marked
+	with a @ preceding the variable name. Class variables are specific to the 
+	class itself, and are marked with a @@ preceding the variable name. One 
+	example of a class variable would be a variable that tracks the number of 
+	instances of a class that have been created.
+
+4. What does attr_accessor do?
+	A convenient shorthand replacement for attr_reader and attr_writer, which 
+	in turn replace explicit getter and setter methods for a variable. It is 
+	followed by a list of symbols for the affected variables, separated by 
+	commas, and is typically placed at the top of the class. 
+
+5. How would you describe this expression: Dog.some_method
+	This is calling a class method for the class Dog, in other words not a 
+	specific instance but the class in general. Within the class, these methods
+	are most commonly created as self. methods (although there are other ways 
+	to do it as well.) 
+
+6. In Ruby, what's the difference between subclassing and mixing in modules?
+	Subclasses inheirit methods from their superclass. They may only inheirit 
+	from one superclass in Ruby (no polymorphism), but that superclass may in 
+	turn inheirit. Mixed in modules have all of their methods included in the 
+	class. Generally you want to use modules when you are defining verb-like 
+	methods that might be used by many different classes.
+
+7. Given that I can instantiate a user like this: User.new('Bob'), what would 
+	the initialize method look like for the User class?
+
+	def initialize(n)
+	  @name = n
+	end
+
+8. Can you call instance methods of the same class from other instance methods 
+   in that class?
+
+   yes
+
+9. When you get stuck, what's the process you use to try to trap the error?
+
+	If the program crashed, start by looking at the top line of the error 
+	and if necessary trace back from there.
+	Else insert binding.pry (after installing gem 'pry') around where the error
+	is likely to be. It will effectively pause the program and allow you to 
+	inspect all of the variables.
