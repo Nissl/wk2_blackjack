@@ -120,10 +120,10 @@ end
 
 
 class Blackjack
-  attr_accessor :player, :dealer, :deck, :hand
+  attr_accessor :player, :dealer, :deck, :num_decks
 
   def initialize 
-    setup_game
+    setup_game(num_decks = 6)
   end
 
   def run
@@ -140,15 +140,15 @@ class Blackjack
         end
       end
       reset_game
-      break if not play_again
+      break if !play_again?
     end
     thank_player
   end
 
-  def setup_game
+  def setup_game(num_decks)
     @player = Player.new(get_name)
     @dealer = Dealer.new
-    @deck = Deck.new($num_decks)
+    @deck = Deck.new(num_decks)
   end
 
   def get_name
@@ -212,6 +212,8 @@ class Blackjack
         player.draw_card(deck)
         show_flop
       elsif input == "stay"
+        puts 
+        puts "#{player.name} stays at #{player.score}"
         break
       else
         puts
@@ -237,9 +239,11 @@ class Blackjack
       sleep(1)
     end
 
-    if dealer.is_busted?
-      puts
+    puts
+    if dealer.is_busted?  
       puts "The dealer busts! You win, #{player.name}!"
+    else
+      puts "The dealer stays at #{dealer.score}"
     end
   end
 
@@ -257,39 +261,36 @@ class Blackjack
   end
 
   def reset_game
-    player.hand = []
-    dealer.hand = []
+    # Deck intentionally not reset to allow card counting.
+    player.hand, dealer.hand = [], []
   end
 
-  def play_again
-    play_again = false
+  def play_again?
     while true
       puts
       puts "Play again? Please enter 'yes' or 'no'."
       input = gets.chomp
       if input == "yes"
-        play_again = true
-        break 
+        return true
       elsif input == "no"
-        break
+        return false
       else
         puts "Sorry, not a valid input."
       end
     end
-    play_again
   end
 
   def thank_player
     puts
     puts "Thanks for playing!"
     puts
+    exit
   end
 
 end
 
 MAX_SCORE = 21
 DEALER_CUTOFF = 17
-$num_decks = 6
 
 Blackjack.new.run
 
