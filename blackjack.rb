@@ -82,16 +82,21 @@ module Hand
     end
 
     vals.select{ |val| val == "Ace" }.count.times do
-      total -= 10 if total > MAX_SCORE
+      total -= 10 if total > Constants::MAX_SCORE
     end
 
     total
   end
 
   def is_busted?
-    score > MAX_SCORE
+    score > Constants::MAX_SCORE
   end
 
+end
+
+module Constants
+  MAX_SCORE = 21
+  DEALER_CUTOFF = 17
 end
 
 
@@ -120,6 +125,7 @@ end
 
 
 class Blackjack
+  include Constants
   attr_accessor :player, :dealer, :deck, :num_decks
 
   def initialize 
@@ -288,9 +294,6 @@ class Blackjack
   end
 
 end
-
-MAX_SCORE = 21
-DEALER_CUTOFF = 17
 
 Blackjack.new.run
 
