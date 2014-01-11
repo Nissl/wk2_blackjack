@@ -9,16 +9,14 @@ class Card
   def to_s
     "#{value} of #{suit}"
   end
-
 end
-
 
 class Deck
   attr_accessor :deck
 
   def initialize(num_decks)
     @deck = []
-    num_decks.times do 
+    num_decks.times do
       %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace).each do |value|
         %w(Clubs Diamonds Hearts Spades).each do |suit|
           @deck << Card.new(value, suit)
@@ -30,16 +28,14 @@ class Deck
 
   def shuffle_deck!
     puts
-    puts "The dealer shuffles the cards..."
+    puts 'The dealer shuffles the cards...'
     deck.shuffle!
   end
 
   def draw
     deck.pop
   end
-
 end
-
 
 module Hand
   attr_accessor :hand
@@ -66,39 +62,37 @@ module Hand
 
   def read_hand_upcard
     puts
-    puts "The dealer is showing:" 
+    puts 'The dealer is showing:'
     puts "#{hand[1].to_s}"
   end
 
   def score
     total = 0
-    vals = hand.map{ |card| card.value }
+    vals = hand.map { |card| card.value }
     vals.each do |val|
-      if val == "Ace"
+      if val == 'Ace'
         total += 11
-      else 
+      else
         total += (val.to_i == 0 ? 10 : val.to_i)
       end
     end
 
-    vals.select{ |val| val == "Ace" }.count.times do
+    vals.select { |val| val == 'Ace' }.count.times do
       total -= 10 if total > Constants::MAX_SCORE
     end
 
     total
   end
 
-  def is_busted?
+  def busted?
     score > Constants::MAX_SCORE
   end
-
 end
 
 module Constants
   MAX_SCORE = 21
   DEALER_CUTOFF = 17
 end
-
 
 class Player
   include Hand
@@ -108,21 +102,17 @@ class Player
     @name = n
     @hand = []
   end
-
 end
-
 
 class Dealer
   include Hand
   attr_accessor :name, :hand, :busted
 
   def initialize
-    @name = "The dealer"
+    @name = 'The dealer'
     @hand = []
   end
-
 end
-
 
 class Blackjack
   include Constants
@@ -138,9 +128,9 @@ class Blackjack
       show_flop
       if not blackjack?
         player_turn
-        if !player.is_busted?
+        unless player.busted?
           dealer_turn
-          if !dealer.is_busted?
+          unless dealer.busted?
            resolve_game
           end
         end
@@ -228,7 +218,7 @@ class Blackjack
         next
       end
 
-      if player.is_busted?
+      if player.busted?
         puts
         puts "You busted! Sorry, #{player.name}, but you lose."
         break
@@ -246,7 +236,7 @@ class Blackjack
     end
 
     puts
-    if dealer.is_busted?  
+    if dealer.busted?  
       puts "The dealer busts! You win, #{player.name}!"
     else
       puts "The dealer stays at #{dealer.score}"
@@ -292,13 +282,6 @@ class Blackjack
     puts
     exit
   end
-
 end
 
 Blackjack.new.run
-
-
-
-
-
-
